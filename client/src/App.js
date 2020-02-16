@@ -7,7 +7,9 @@ class App extends Component {
     this.state = {
       users: [],
       username: "",
-      password: ""
+      password: "",
+      editing:false,
+      editingIndex:-1
     };
   }
 
@@ -43,19 +45,19 @@ class App extends Component {
       `/users/add?id=${this.state.id}&username=${this.state.username}&password=${this.state.password}`
     )
       .then(res => res.json())
-      .then(user => {
-        newList.push(user);
+      .then(users => {
+        newList.push(users);
         this.setState({ users: newList, username:'', password: ''})
       });
   }
 
 
-  deleteItem(input){
+  deleteItem(id){
     let arr=this.state.users;
-    const result = arr.filter(user => user.id !== input);
+    const result = arr.filter(user => user.id !== id);
     
     fetch(
-      `/users/delete/${input}`
+      `/users/delete/${id}`
     )
       .then(res => res.json())
       .then(users => {
@@ -63,6 +65,27 @@ class App extends Component {
       });
   }
 
+  editItem(id) {
+    this.setState({
+      editing: true,
+      username: this.state.users[id], //selects task by id
+      editingIndex: id
+    })
+  }
+
+
+  updateItem() {
+    //prevents the page from refreshing after clicking submit
+    this.setState({
+      //goes through the list
+      users: this.state.users.map((username, id) =>  
+        //changes the element that has the matching index
+        id === this.state.editingIndex ? this.state.username : username  
+      ),
+      editing: false,
+      username: ''    //empties input after clicking update
+    })
+  }
 
   render() {
     return (
@@ -85,9 +108,8 @@ class App extends Component {
             value={this.state.password}
             onChange={e=> this.password(e.target.value)} 
           />
-          <button type="submit" onClick= {()=> this.addUser()}>
-            Add
-          </button>
+          <input type="submit" value = {this.state.editing ? "Update" : "Add"} onClick = {this.state.editing ? this.updateItem() : this.addUser()} />
+          
           <ul>
             {this.state.users.map((user,id)=>(
               <li key={id}>
