@@ -68,22 +68,19 @@ class App extends Component {
   editItem(id) {
     this.setState({
       editing: true,
-      username: this.state.users[id], //selects task by id
+      username: this.state.users[id], 
       editingIndex: id
     })
   }
 
 
   updateItem() {
-    //prevents the page from refreshing after clicking submit
     this.setState({
-      //goes through the list
       users: this.state.users.map((username, id) =>  
-        //changes the element that has the matching index
         id === this.state.editingIndex ? this.state.username : username  
       ),
       editing: false,
-      username: ''    //empties input after clicking update
+      username: '' 
     })
   }
 
