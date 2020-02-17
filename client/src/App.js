@@ -68,7 +68,6 @@ class App extends Component {
 
 
   editItem=(id) =>{
-    console.log(id)
     const user = this.state.users.find(user => user.id === id)
     this.setState({
       editing: true,
@@ -80,11 +79,10 @@ class App extends Component {
 
   updateItem=async()=> {
   const res= await fetch(
-      `/users/update/${this.state.id}?username=${this.state.username}&password=${this.state.password}`
+      `/users/update/${this.state.editingIndex}?username=${this.state.username}&password=${this.state.password}`
     )
    const users = await res.json()
    
-      console.log(users)
       this.setState({
       users: this.state.users.map((user) =>  
            user.id === this.state.editingIndex ? {...user, username: this.state.username} : user  
@@ -119,7 +117,6 @@ class App extends Component {
       <input type="submit" value = {this.state.editing ? "Update" : "Add"} onClick = {this.state.editing ?(e)=> this.updateItem() :(e)=> this.addUser()} />          
           <ul>
             {this.state.users.map((user,index)=>{
-              console.log('user',user)
               return (
                 <li key={index}>
                   {user.id}- {user.username}
