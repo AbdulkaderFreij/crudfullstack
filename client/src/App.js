@@ -23,15 +23,16 @@ class App extends Component {
       );
   }
 
-
-  username(input){
+  username=(e)=>{
+    e.preventDefault();
     this.setState(
-      {username:input}
+      {username:e.target.value}
     )
   }
-  password(input){
+  password=(e)=>{
+    e.preventDefault();
     this.setState(
-      {password:input}
+      {password:e.target.value}
     )
   }
 
@@ -65,22 +66,32 @@ class App extends Component {
       });
   }
 
-  editItem(id) {
+
+  editItem=(id) =>{
+    console.log(id)
+    const user = this.state.users.find(user => user.id === id)
     this.setState({
       editing: true,
-      username: this.state.users[id], 
+      username: user.username, 
       editingIndex: id
     })
   }
 
 
-  updateItem() {
-    this.setState({
-      users: this.state.users.map((username, id) =>  
-        id === this.state.editingIndex ? this.state.username : username  
+  updateItem=async()=> {
+  const res= await fetch(
+      `/users/update/${this.state.id}?username=${this.state.username}&password=${this.state.password}`
+    )
+   const users = await res.json()
+   
+      console.log(users)
+      this.setState({
+      users: this.state.users.map((user) =>  
+           user.id === this.state.editingIndex ? {...user, username: this.state.username} : user  
       ),
       editing: false,
-      username: '' 
+      username: '' ,
+      password:""
     })
   }
 
@@ -97,24 +108,26 @@ class App extends Component {
             type="text"
             placeholder="Enter user name"
             value={this.state.username}
-            onChange={e => this.username(e.target.value)} 
+            onChange={e => this.username(e)} 
           />
           <input
             type="password"
             placeholder="Enter your password"
             value={this.state.password}
-            onChange={e=> this.password(e.target.value)} 
+            onChange={e=> this.password(e)} 
           />
-          <input type="submit" value = {this.state.editing ? "Update" : "Add"} onClick = {this.state.editing ? this.updateItem() : this.addUser()} />
-          
+      <input type="submit" value = {this.state.editing ? "Update" : "Add"} onClick = {this.state.editing ?(e)=> this.updateItem() :(e)=> this.addUser()} />          
           <ul>
-            {this.state.users.map((user,id)=>(
-              <li key={id}>
-                {user.id}- {user.username}
-                <button type="button" onClick={() => this.deleteItem(user.id)}>delete</button>
-                <button type="button" onClick={()=>this.editItem(user.id)}>edit</button>
-              </li>
-            ))}
+            {this.state.users.map((user,index)=>{
+              console.log('user',user)
+              return (
+                <li key={index}>
+                  {user.id}- {user.username}
+                  <button type="button" onClick={() => this.deleteItem(user.id)}>delete</button>
+                  <button type="button" onClick={()=>this.editItem(user.id)}>edit</button>
+                </li>
+              )
+            })}
           </ul>
         </form>
       </>

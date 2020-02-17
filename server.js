@@ -54,8 +54,10 @@ const start = async () => {
   app.get("/users/update/:id", async (req, res) => {
     const id = req.params.id;
     const {username, password}=req.query;
+    console.log(username, password)
     try {
       const updateUser = await controller.updateUser(id,{ username, password });
+      console.log(updateUser)
       res.json({ updateUser });
     } catch (e) {
       res.json({ status: 403, error: true, message: e.message });
